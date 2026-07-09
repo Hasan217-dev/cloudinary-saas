@@ -10,21 +10,16 @@ export default clerkMiddleware(async (auth, req) => {
 
   const isPublicRoute = publicRoutes.includes(pathname)
   const isPublicApiRoute = publicApiRoutes.some((route) => pathname.startsWith(route))
-  const isApiRequest = pathname.startsWith('/api')
 
-  // tumhara original logic: signed-in user public route pe jaaye to sign-in pe bhej do
-  if (userId && isPublicRoute && !isPublicApiRoute) {
-    return NextResponse.redirect(new URL('/sign-in', req.url))
+  // signed-in user public route (/, /sign-in, /sign-up) pe jaaye to /home bhej do
+  // agar already /home pe hai to redirect mat karo, warna infinite loop ban jayega
+  if (userId && isPublicRoute && !isPublicApiRoute && pathname !== '/home') {
+    return NextResponse.redirect(new URL('/home', req.url))
   }
 
-  if (!userId) {
-    if (!isPublicRoute && !isPublicApiRoute) {
-      return NextResponse.redirect(new URL('/sign-in', req.url))
-    }
-
-    if (isApiRequest && !isPublicApiRoute) {
-      return NextResponse.redirect(new URL('/sign-in', req.url))
-    }
+  // signed-out user protected route (public nahi) pe jaaye to sign-in pe bhej do
+  if (!userId && !isPublicRoute && !isPublicApiRoute) {
+    return NextResponse.redirect(new URL('/sign-in', req.url))
   }
 
   return NextResponse.next()
