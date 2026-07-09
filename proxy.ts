@@ -10,15 +10,21 @@ export default clerkMiddleware(async (auth, req) => {
 
   const isPublicRoute = publicRoutes.includes(pathname)
   const isPublicApiRoute = publicApiRoutes.some((route) => pathname.startsWith(route))
+  const isApiRequest = pathname.startsWith('/api')
 
-  // Signed-in users shouldn't linger on auth pages
-  if (userId && (pathname === '/sign-in' || pathname === '/sign-up')) {
-    return NextResponse.redirect(new URL('/home', req.url))
+  // tumhara original logic: signed-in user public route pe jaaye to sign-in pe bhej do
+  if (userId && isPublicRoute && !isPublicApiRoute) {
+    return NextResponse.redirect(new URL('/sign-in', req.url))
   }
 
-  // Not signed in and trying to reach a protected route
-  if (!userId && !isPublicRoute && !isPublicApiRoute) {
-    return NextResponse.redirect(new URL('/sign-in', req.url))
+  if (!userId) {
+    if (!isPublicRoute && !isPublicApiRoute) {
+      return NextResponse.redirect(new URL('/sign-in', req.url))
+    }
+
+    if (isApiRequest && !isPublicApiRoute) {
+      return NextResponse.redirect(new URL('/sign-in', req.url))
+    }
   }
 
   return NextResponse.next()
