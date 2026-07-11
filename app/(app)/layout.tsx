@@ -1,31 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useClerk, useUser } from "@clerk/nextjs";
-import {
-  LogOutIcon,
-  MenuIcon,
-  LayoutDashboardIcon,
-  Share2Icon,
-  UploadIcon,
-  ImageIcon,
-} from "lucide-react";
-
-const sidebarItems = [
-  { href: "/home", icon: LayoutDashboardIcon, label: "Home Page" },
-  { href: "/social-share", icon: Share2Icon, label: "Social Share" },
-  { href: "/video-upload", icon: UploadIcon, label: "Video Upload" },
-];
+import { LogOutIcon } from "lucide-react";
 
 export default function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const pathname = usePathname();
   const router = useRouter();
   const { signOut } = useClerk();
   const { user } = useUser();
@@ -35,108 +20,55 @@ export default function AppLayout({
   };
 
   const handleSignOut = async () => {
-    await signOut();
+    await signOut({ redirectUrl: "/sign-in" });
   };
 
   return (
-    <div className="drawer lg:drawer-open">
-      <input
-        id="sidebar-drawer"
-        type="checkbox"
-        className="drawer-toggle"
-        checked={sidebarOpen}
-        onChange={() => setSidebarOpen(!sidebarOpen)}
-      />
-      <div className="drawer-content flex flex-col">
-        {/* Navbar */}
-        <header className="w-full bg-base-200">
-          <div className="navbar max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex-none lg:hidden">
-              <label
-                htmlFor="sidebar-drawer"
-                className="btn btn-square btn-ghost drawer-button"
-              >
-                <MenuIcon />
-              </label>
-            </div>
-            <div className="flex-1">
-              <Link href="/" onClick={handleLogoClick}>
-                <div className="btn btn-ghost normal-case text-2xl font-bold tracking-tight cursor-pointer">
-                  Cloudinary Showcase
-                </div>
-              </Link>
-            </div>
-            <div className="flex-none flex items-center space-x-4">
-              {user && (
-                <>
-                  <div className="avatar">
-                    <div className="w-8 h-8 rounded-full">
-                      <img
-                        src={user.imageUrl}
-                        alt={
-                          user.username || user.emailAddresses[0].emailAddress
-                        }
-                      />
-                    </div>
+    <div className="min-h-screen flex flex-col bg-base-100">
+      {/* Top Navbar */}
+      <header className="w-full bg-base-200 border-b border-base-300 sticky top-0 z-50 shadow-sm">
+        <div className="navbar max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex-1">
+            <Link href="/" onClick={handleLogoClick}>
+              <div className="btn btn-ghost normal-case text-xl font-bold tracking-tight cursor-pointer gap-2">
+                <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                </svg>
+                Cloudinary Showcase
+              </div>
+            </Link>
+          </div>
+          <div className="flex-none flex items-center gap-3">
+            {user && (
+              <>
+                <div className="avatar">
+                  <div className="w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-1">
+                    <img
+                      src={user.imageUrl}
+                      alt={user.username || user.emailAddresses[0].emailAddress}
+                    />
                   </div>
-                  <span className="text-sm truncate max-w-xs lg:max-w-md">
-                    {user.username || user.emailAddresses[0].emailAddress}
-                  </span>
-                  <button
-                    onClick={handleSignOut}
-                    className="btn btn-ghost btn-circle"
-                  >
-                    <LogOutIcon className="h-6 w-6" />
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        </header>
-        {/* Page content */}
-        <main className="flex-1">
-          <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 my-8">
-            {children}
-          </div>
-        </main>
-      </div>
-      <div className="drawer-side">
-        <label htmlFor="sidebar-drawer" className="drawer-overlay"></label>
-        <aside className="bg-base-200 w-64 h-full flex flex-col">
-          <div className="flex items-center justify-center py-4">
-            <ImageIcon className="w-10 h-10 text-primary" />
-          </div>
-          <ul className="menu p-4 w-full text-base-content flex-1">
-            {sidebarItems.map((item) => (
-              <li key={item.href} className="mb-2">
-                <Link
-                  href={item.href}
-                  className={`flex items-center space-x-4 px-4 py-2 rounded-lg ${
-                    pathname === item.href
-                      ? "bg-primary text-white"
-                      : "hover:bg-base-300"
-                  }`}
-                  onClick={() => setSidebarOpen(false)}
+                </div>
+                <span className="text-sm font-medium truncate max-w-[160px] hidden sm:block text-base-content/80">
+                  {user.username || user.emailAddresses[0].emailAddress}
+                </span>
+                <button
+                  onClick={handleSignOut}
+                  className="btn btn-ghost btn-circle btn-sm"
+                  title="Sign out"
                 >
-                  <item.icon className="w-6 h-6" />
-                  <span>{item.label}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-          {user && (
-            <div className="p-4">
-              <button
-                onClick={handleSignOut}
-                className="btn btn-outline btn-error w-full"
-              >
-                <LogOutIcon className="mr-2 h-5 w-5" />
-                Sign Out
-              </button>
-            </div>
-          )}
-        </aside>
-      </div>
+                  <LogOutIcon className="h-4 w-4" />
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {/* Page content */}
+      <main className="flex-1">
+        {children}
+      </main>
     </div>
   );
-}
+}
