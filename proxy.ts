@@ -1,5 +1,5 @@
 import { clerkMiddleware } from '@clerk/nextjs/server'
-import { NextResponse } from 'next/server'
+import { NextResponse } from '@/app/node_modules/next/server'
 
 const publicRoutes = ['/', '/sign-in', '/sign-up', '/home']
 const publicApiRoutes = ['/api/videos']
