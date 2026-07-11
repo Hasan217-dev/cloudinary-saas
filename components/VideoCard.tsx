@@ -9,7 +9,7 @@ import {filesize} from "filesize"
 dayjs.extend(realtiveTime)
 
 interface Videos {
-    public_Id: string;
+    public_id: string;
     title: string;
     description: string;
     duration: number;
@@ -27,9 +27,9 @@ const  VideoCard: React.FC<VideoCardProps> = ({video, onDownload}) => {
     const [isHovered, setIsHovered] = useState(false)
     const [previewError, setPreviewError] = useState(false)
 
-    const getThumbnailUrl = useCallback((publicId: string) => {
+    const getThumbnailUrl = useCallback((public_id: string) => {
         return getCldImageUrl({
-            src: publicId,
+            src: public_id,
             width: 400,
             height: 225,
             crop: "fill",
@@ -40,18 +40,18 @@ const  VideoCard: React.FC<VideoCardProps> = ({video, onDownload}) => {
         })
     }, []);
 
-    const getFullVideoUrl = useCallback((publicId: string) => {
+    const getFullVideoUrl = useCallback((public_id: string) => {
         return getCldVideoUrl({
-            src: publicId,
+            src: public_id,
             width: 1920,
             height: 1080,
 
         })
     }, []);
 
-    const getPreviewVideoUrl = useCallback((publicId: string) => {
+    const getPreviewVideoUrl = useCallback((public_id: string) => {
         return getCldVideoUrl({
-            src: publicId,
+            src: public_id,
             width: 400,
             height: 225,
             rawTransformations: ["e_preview:duration_15:max_seg_9:min_seg_dur_1"]
@@ -94,7 +94,7 @@ const  VideoCard: React.FC<VideoCardProps> = ({video, onDownload}) => {
                 </div>
               ) : (
                 <video
-                  src={getPreviewVideoUrl(video.public_Id)}
+                  src={getPreviewVideoUrl(video.public_id)}
                   autoPlay
                   muted
                   loop
@@ -104,7 +104,7 @@ const  VideoCard: React.FC<VideoCardProps> = ({video, onDownload}) => {
               )
             ) : (
               <img
-                src={getThumbnailUrl(video.public_Id)}
+                src={getThumbnailUrl(video.public_id)}
                 alt={video.title}
                 className="w-full h-full object-cover"
               />
@@ -146,7 +146,7 @@ const  VideoCard: React.FC<VideoCardProps> = ({video, onDownload}) => {
               <button
                 className="btn btn-primary btn-sm"
                 onClick={() =>
-                  onDownload(getFullVideoUrl(video.public_Id), video.title)
+                  onDownload(getFullVideoUrl(video.public_id), video.title)
                 }
               >
                 <Download size={16} />

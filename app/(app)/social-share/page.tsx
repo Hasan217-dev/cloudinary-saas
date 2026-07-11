@@ -55,7 +55,6 @@ export default function SocialShare() {
   const imageRef = useRef<HTMLImageElement | null>(null);
 
 
-
   const handleFileUpload = async (file: File) => {
     if (!file) return;
     setIsUploading(true);
@@ -72,7 +71,6 @@ export default function SocialShare() {
       if (!response.ok) throw new Error("Failed to upload the image");
 
       const data = await response.json();
-      // FIX: The api returns public_id, not publicid
       if (data.public_id) {
         setUploadedImage(data.public_id);
         setIsTransforming(true);
@@ -125,7 +123,7 @@ export default function SocialShare() {
           .toLowerCase()}.png`;
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link); // FIX: Removed duplicate removeChild call
+        document.body.removeChild(link); 
         window.URL.revokeObjectURL(url);
       });
   };
