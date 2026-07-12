@@ -8,6 +8,10 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET // Click 'View Credentials' below to copy your API secret
 });
 
+cloudinary.api.ping()
+  .then((res) => console.log("✅ Success:", res))
+  .catch((err) => console.log("❌ Failed:", err));
+
 interface CloudinaryUploadResult {
     public_id: string;
     [key: string]: any
@@ -45,7 +49,7 @@ export async function POST(request: NextRequest) {
         )
         return NextResponse.json(
             {
-                publicId: result.public_id
+                public_id: result.public_id
             },
             {
                 status: 200
