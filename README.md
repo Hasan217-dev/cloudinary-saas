@@ -1,36 +1,135 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Cloudinary SaaS Creative Hub 🎨
 
-## Getting Started
+A full-stack media management SaaS built with **Next.js**, **Cloudinary**, **Clerk**, and **Prisma (PostgreSQL/Neon)**. Upload, compress, preview, and share images and videos with automatic optimization powered by Cloudinary.
 
-First, run the development server:
+> ⚠️ **Status:** In active development — not yet deployed to production.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## ✨ Features
+
+- 🔐 **Authentication** — Secure sign-in/sign-up via [Clerk](https://clerk.com)
+- 🎥 **Video Upload & Compression** — Upload videos, auto-compress via Cloudinary, and view compression stats (original vs. compressed size)
+- 🖼️ **Image Upload** — Upload and optimize images
+- 📊 **Video Library** — Browse uploaded videos with thumbnails, hover-to-preview, duration, and file size details
+- 🔗 **Social Share** — Share optimized media across platforms
+- ⬇️ **One-click Download** — Download full-resolution processed videos
+- 🗄️ **PostgreSQL (Neon) + Prisma ORM** — Persistent storage for video/image metadata
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer          | Technology                          |
+|----------------|--------------------------------------|
+| Framework      | Next.js (App Router)                |
+| Auth           | Clerk                               |
+| Media Storage  | Cloudinary                          |
+| Database       | PostgreSQL (Neon, serverless)       |
+| ORM            | Prisma (`@prisma/adapter-pg`)       |
+| UI Components  | React, Tailwind CSS, DaisyUI, lucide-react |
+| Date Handling  | Day.js                              |
+| File Size Format | `filesize` npm package             |
+
+---
+
+## 📁 Project Structure (relevant parts)
+
+```
+cloudinary-saas/
+├── app/
+│   ├── (app)/
+│   │   └── home/
+│   │       └── page.tsx        # Video library / dashboard
+│   ├── api/
+│   │   └── video-upload/
+│   │       └── route.ts        # Handles video upload + Cloudinary + DB save
+│   └── generated/
+│       └── prisma/             # Generated Prisma client
+├── components/
+│   └── VideoCard.tsx           # Video card UI (thumbnail, preview, stats, download)
+├── prisma/
+│   └── schema.prisma           # Database schema
+└── README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚙️ Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env` file in the project root with the following:
 
-## Learn More
+```env
+# Database
+DATABASE_URL=your_postgresql_connection_string
 
-To learn more about Next.js, take a look at the following resources:
+# Cloudinary
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🗃️ Database Schema
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```prisma
+model videos {
+  id             String   @id @default(cuid())
+  title          String
+  description    String?
+  public_id      String
+  orignalSize    String
+  compressedSize String
+  duration       Float
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> **Note:** The `orignalSize` field name has an intentional-for-now typo (missing "i"). It's kept as-is throughout the codebase (schema, API route, and `VideoCard.tsx`) to avoid running a database migration during active local development. Fix this to `originalSize` before any production deployment for cleanliness.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Install dependencies
+```bash
+npm install
+```
+
+### 2. Set up environment variables
+Copy `.env.example` (if present) or create `.env` as shown above.
+
+### 3. Generate Prisma client & sync database
+```bash
+npx prisma generate
+npx prisma migrate dev
+```
+
+### 4. Run the development server
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 🐛 Known Issues / TODO
+
+- [ ] Rename `orignalSize` → `originalSize` across schema, API route, and frontend (requires a safe `RENAME COLUMN` migration, not a drop/add)
+- [ ] Add validation for missing/invalid file sizes before saving to DB
+- [ ] Add loading and error states for video upload
+- [ ] Deployment setup (Vercel / other) — not yet configured
+- [ ] Add tests for upload and compression flows
+
+---
+
+## 📄 License
+
+Private project — not licensed for public/commercial use yet.
